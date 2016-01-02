@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         verifyStoragePermissions(this);
-
     }
 
     public void onClick(View view) throws IOException {
@@ -47,10 +46,9 @@ public class MainActivity extends AppCompatActivity {
             int duration = Toast.LENGTH_LONG;
 
             Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
+            toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
             verifyStoragePermissions(this);
-
         }
         else {
             if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
@@ -122,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-
     }
 
     @Override
@@ -144,30 +141,21 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_about) {
             About();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     private static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
     private static boolean isExternalStorageAvailable() {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return (Environment.MEDIA_MOUNTED.equals(extStorageState));
     }
-
 }
