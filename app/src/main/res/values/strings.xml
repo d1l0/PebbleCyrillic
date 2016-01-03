@@ -5,9 +5,9 @@
     <string name="install_button">Go Cyrillic!</string>
     <string name="storage_unavailable">Can not write to external  storage =( It is read only or USB file transfer mode is enabled</string>
     <string name="granted">Can not write to external storage. Permission was not granted.</string>
-    <string name="author">Author/Developer: Dmytro Demchenko</string>
+    <string name="author">Author/Developer: @d1mko</string>
     <string name="lang_pack_creator">Lang .pbl creator: Semyon Maryasin</string>
-    <string name="design">Design: Unknown</string>
+    <string name="design">Design: @Kazanok</string>
     <string name="about">Pebble Cyrillic: About</string>
     <string name="version">Ver.: 1.0.0</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
