@@ -31,6 +31,9 @@ import com.google.android.gms.ads.InterstitialAd;
 
 public class MainActivity extends AppCompatActivity {
     InterstitialAd mInterstitialAd;
+    String FILE_PATH = Environment.getExternalStorageDirectory()
+            .getAbsolutePath() + "/Android/data/com.d1l0.pebble.cyrillic/files/cyrillic.pbl";
+    boolean storage_unv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,16 +65,20 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Verify whether we have write to storage permissions
         verifyStoragePermissions(this);
     }
 
     public void Install() throws IOException{
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+        //Verify whether write to storage permissions was granted
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             Context context = getApplicationContext();
             CharSequence text = getString(R.string.granted);
+
             int duration = Toast.LENGTH_LONG;
 
             Toast toast = Toast.makeText(context, text, duration);
@@ -79,46 +86,52 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
             verifyStoragePermissions(this);
         } else {
-            if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
-                String folder_main = "Android/data/com.d1l0.pebble.cyrillic/files";
-                String file_pth = Environment.getExternalStorageDirectory()
-                        .getAbsolutePath() + "/Android/data/com.d1l0.pebble.cyrillic/files/cyrillic.pbl";
+            writeOnStorage();
 
-                File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), folder_main);
-                if (!f.exists()) {
-                    f.mkdirs();
-                }
-
-                InputStream in = getResources().openRawResource(
-                        getResources().getIdentifier("raw/cyrillic",
-                                "raw", getPackageName()));
-                OutputStream out = new FileOutputStream(file_pth);
-
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                out.close();
-
-                File file = new File(file_pth);
+            if (!storage_unv) {
+                File file = new File(FILE_PATH);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.fromFile(file), "*/*");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 String chooserTitle = getString(R.string.install_lang);
                 Intent chosenIntent = Intent.createChooser(intent, chooserTitle);
                 startActivity(chosenIntent);
-            } else {
-                Context context = getApplicationContext();
-                CharSequence text = getString(R.string.storage_unavailable);
-                int duration = Toast.LENGTH_LONG;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                //toast.setGravity(Gravity.BOTTOM| Gravity.CENTER, 0, 10);
-                toast.show();
             }
+        }
+    }
+
+    public void writeOnStorage() throws IOException{
+        if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
+            String folder_main = "Android/data/com.d1l0.pebble.cyrillic/files";
+
+            File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), folder_main);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+
+            InputStream in = getResources().openRawResource(
+                    getResources().getIdentifier("raw/cyrillic",
+                            "raw", getPackageName()));
+            OutputStream out = new FileOutputStream(FILE_PATH);
+
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+
+        } else {
+            Context context = getApplicationContext();
+            CharSequence text = getString(R.string.storage_unavailable);
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            //toast.setGravity(Gravity.BOTTOM| Gravity.CENTER, 0, 10);
+            toast.show();
+            storage_unv = true;
         }
     }
 
