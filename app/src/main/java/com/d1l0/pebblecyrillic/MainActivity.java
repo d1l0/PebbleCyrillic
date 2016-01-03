@@ -31,8 +31,9 @@ import com.google.android.gms.ads.InterstitialAd;
 
 public class MainActivity extends AppCompatActivity {
     InterstitialAd mInterstitialAd;
+    String FOLDER_MAIN = "Android/data/com.d1l0.pebble.cyrillic/files";
     String FILE_PATH = Environment.getExternalStorageDirectory()
-            .getAbsolutePath() + "/Android/data/com.d1l0.pebble.cyrillic/files/cyrillic.pbl";
+            .getAbsolutePath() + "/"+FOLDER_MAIN+"/cyrillic.pbl";
     boolean storage_unv;
 
     @Override
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         requestNewInterstitial();
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,9 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void writeOnStorage() throws IOException{
         if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
-            String folder_main = "Android/data/com.d1l0.pebble.cyrillic/files";
 
-            File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), folder_main);
+            File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), FOLDER_MAIN);
             if (!f.exists()) {
                 f.mkdirs();
             }
@@ -135,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Calling interstitial google add and than launch Install method.
     public void onClick(View view) throws IOException {
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
@@ -143,13 +143,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-
     /**
      * Checks if the app has permission to write to device storage
      *
@@ -157,6 +150,13 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param activity
      */
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+     // Create intent to start about.class activity
      public void About(){
          Intent intent = new Intent(this, about.class);
          startActivity(intent);
@@ -198,16 +199,19 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Verify whether external storage is readonly
     private static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
+    //Verify whether external storage is available
     private static boolean isExternalStorageAvailable() {
         String extStorageState = Environment.getExternalStorageState();
         return (Environment.MEDIA_MOUNTED.equals(extStorageState));
     }
 
+    //Google adMob code to request new interstitial ad.
     private void requestNewInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
