@@ -23,15 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-
+import com.google.android.gms.ads.InterstitialAd;
 
 
 public class MainActivity extends AppCompatActivity {
+    InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -39,13 +42,30 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                requestNewInterstitial();
+                try {
+                    Install();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        requestNewInterstitial();
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         verifyStoragePermissions(this);
     }
 
-    public void onClick(View view) throws IOException {
-
+    public void Install() throws IOException{
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -58,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
             verifyStoragePermissions(this);
-        }
-        else {
+        } else {
             if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
                 String folder_main = "Android/data/com.d1l0.pebble.cyrillic/files";
                 String file_pth = Environment.getExternalStorageDirectory()
@@ -100,6 +119,14 @@ public class MainActivity extends AppCompatActivity {
                 //toast.setGravity(Gravity.BOTTOM| Gravity.CENTER, 0, 10);
                 toast.show();
             }
+        }
+    }
+
+    public void onClick(View view) throws IOException {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Install();
         }
     }
 
@@ -166,5 +193,13 @@ public class MainActivity extends AppCompatActivity {
     private static boolean isExternalStorageAvailable() {
         String extStorageState = Environment.getExternalStorageState();
         return (Environment.MEDIA_MOUNTED.equals(extStorageState));
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 }
