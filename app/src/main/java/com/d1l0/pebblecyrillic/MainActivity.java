@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_beta));
 
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             if (!storage_unv) {
                 File file = new File(FILE_PATH);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(file), "*/*");
+                intent.setDataAndType(Uri.fromFile(file), "application/octet-stream .pbl");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 String chooserTitle = getString(R.string.install_lang);
                 Intent chosenIntent = Intent.createChooser(intent, chooserTitle);
