@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.d1l0.pebblecyrillic.MainActivity"
-    android:touchscreenBlocksFocus="false">
+    android:touchscreenBlocksFocus="false"
+    android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
