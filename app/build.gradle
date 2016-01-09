@@ -8,8 +8,8 @@ android {
         applicationId "com.d1l0.pebblecyrillic"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 2
-        versionName "1.0.001"
+        versionCode 8
+        versionName "1.0.7"
     }
     buildTypes {
         release {

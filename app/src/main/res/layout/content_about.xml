@@ -19,13 +19,12 @@
         android:id="@+id/textView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/design"
-        android:id="@+id/textView2"
+        android:text="@string/content"
+        android:id="@+id/content"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
 
@@ -35,7 +34,7 @@
         android:gravity="center"
         android:text="@string/lang_pack_creator"
         android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/content"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -54,7 +53,16 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_beta">
+        ads:adUnitId="@string/banner_about_id">
     </com.google.android.gms.ads.AdView>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/ic_launcher"/>
 
 </RelativeLayout>

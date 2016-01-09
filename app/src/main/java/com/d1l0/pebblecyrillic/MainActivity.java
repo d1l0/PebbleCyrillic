@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_beta));
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_onclick));
 
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
