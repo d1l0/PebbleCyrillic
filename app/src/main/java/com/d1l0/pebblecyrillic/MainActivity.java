@@ -2,10 +2,15 @@ package com.d1l0.pebblecyrillic;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -15,6 +20,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,8 +38,17 @@ import com.google.android.gms.ads.InterstitialAd;
 public class MainActivity extends AppCompatActivity {
     InterstitialAd mInterstitialAd;
     String FOLDER_MAIN = "Android/data/com.d1l0.pebble.cyrillic/files";
-    String FILE_PATH = Environment.getExternalStorageDirectory()
-            .getAbsolutePath() + "/"+FOLDER_MAIN+"/cyrillic.pbl";
+    String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+FOLDER_MAIN+"/cyrillic.pbl";
+    String RU_LATEST = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+FOLDER_MAIN+"/ru.pbl";
+    String CURRENT_FILE = "";
+    String LANG_SOURCE_URL = "https://github.com/whidrasl/pebble-russian-language-pack/blob/master/Russian-ru_RU.pbl?raw=true";
+    // Storage Permissions
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     boolean storage_unv;
 
     @Override
@@ -54,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAdClosed() {
                 requestNewInterstitial();
                 try {
-                    Install();
+                    choose_install();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -70,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         verifyStoragePermissions(this);
     }
 
-    public void Install() throws IOException{
+    public void Install(String path) throws IOException{
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         //Verify whether write to storage permissions was granted
@@ -89,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             writeOnStorage();
 
             if (!storage_unv) {
-                File file = new File(FILE_PATH);
+                File file = new File(path);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.fromFile(file), "application/octet-stream .pbl");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -134,28 +149,53 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Calling interstitial google add and than launch Install method.
     public void onClick(View view) throws IOException {
+        //Calling interstitial google add and than launch Install method.
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
-            Install();
+            choose_install();
         }
     }
 
-    /**
-     * Checks if the app has permission to write to device storage
-     *
-     * If the app does not has permission then the user will be prompted to grant permissions
-     *
-     * @param activity
-     */
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    public void choose_install() throws IOException{
+        Spinner pack = (Spinner) findViewById(R.id.pack);
+        String pack_selected = String.valueOf(pack.getSelectedItem());
+        if (pack_selected.equals("Cyrillic fonts only")){
+            CURRENT_FILE = FILE_PATH;
+            Install(CURRENT_FILE);
+        }
+        else {
+            install_latest();
+        }
+    }
+
+    public void install_latest(){
+        if (isNetworkAvailable(this)) {
+            downloadLatest();
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(this, getString(R.string.downloading), duration);
+            toast.show();
+            CURRENT_FILE = RU_LATEST;
+            BroadcastReceiver onComplete = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    try {
+                        Install(RU_LATEST);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            registerReceiver(onComplete, new IntentFilter(
+                    DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        }
+        else{
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(this, getString(R.string.no_internet), duration);
+            toast.show();
+        }
+    }
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -178,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-     // Create intent to start about.class activity
      public void About(){
+         // Create intent to start about.class activity
          Intent intent = new Intent(this, about.class);
          startActivity(intent);
      }
@@ -199,24 +239,47 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Verify whether external storage is readonly
     private static boolean isExternalStorageReadOnly() {
+        //Verify whether external storage is readonly
         String extStorageState = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
-    //Verify whether external storage is available
     private static boolean isExternalStorageAvailable() {
+        //Verify whether external storage is available
         String extStorageState = Environment.getExternalStorageState();
         return (Environment.MEDIA_MOUNTED.equals(extStorageState));
     }
 
-    //Google adMob code to request new interstitial ad.
     private void requestNewInterstitial() {
+        //Google adMob code to request new interstitial ad.
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
+    }
+
+    public void downloadLatest(){
+        String url = LANG_SOURCE_URL;
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setDescription(getString(R.string.download_description));
+        request.setTitle(getString(R.string.download_title));
+        // in order for this if to run, you must use the android 3.2 to compile your app
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/"+FOLDER_MAIN, "ru.pbl");
+
+        // get download service and enqueue file
+        DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+    }
+
+    public boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

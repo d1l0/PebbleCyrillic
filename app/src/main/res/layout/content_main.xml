@@ -32,4 +32,25 @@
         ads:adUnitId="@string/banner_home_id">
     </com.google.android.gms.ads.AdView>
 
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pack"
+        android:entries="@array/lang_array"
+        android:layout_above="@+id/install"
+        android:layout_centerHorizontal="true"
+        android:spinnerMode="dropdown"
+        android:textAlignment="center"
+        android:theme="@style/AppTheme" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/choose_install"
+        android:textSize="24dp"
+        android:id="@+id/textView2"
+        android:layout_above="@+id/pack"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
