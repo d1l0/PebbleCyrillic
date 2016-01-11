@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".about"
-                  android:label="@string/about">
+                  android:label="@string/page_about">
         </activity>
     </application>
 

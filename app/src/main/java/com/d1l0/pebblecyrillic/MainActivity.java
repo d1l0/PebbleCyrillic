@@ -20,7 +20,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -84,6 +86,27 @@ public class MainActivity extends AppCompatActivity {
 
         //Verify whether we have write to storage permissions
         verifyStoragePermissions(this);
+
+        final Spinner pack = (Spinner) findViewById(R.id.pack);
+        pack.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                TextView langs = (TextView) findViewById(R.id.latest_version_text);
+                String pack_selected = String.valueOf(pack.getSelectedItem());
+                if (!pack_selected.equals("Cyrillic fonts only")){
+                    langs.setText(getString(R.string.latest_version_warning));
+                }
+                else {
+                    langs.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // some code here
+            }
+
+        });
     }
 
     public void install(String path) throws IOException{
@@ -93,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             Context context = getApplicationContext();
-            CharSequence text = getString(R.string.granted);
+            CharSequence text = getString(R.string.write_permisson_not_granted);
 
             int duration = Toast.LENGTH_LONG;
 
@@ -102,21 +125,21 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
             verifyStoragePermissions(this);
         } else {
-            writeOnStorage();
+            writeOnStorage("cyrillic");
 
             if (!storage_unv) {
                 File file = new File(path);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.fromFile(file), "application/octet-stream .pbl");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                String chooserTitle = getString(R.string.install_lang);
+                String chooserTitle = getString(R.string.install_message);
                 Intent chosenIntent = Intent.createChooser(intent, chooserTitle);
                 startActivity(chosenIntent);
             }
         }
     }
 
-    public void writeOnStorage() throws IOException{
+    public void writeOnStorage(String file) throws IOException{
         if (!isExternalStorageReadOnly() && isExternalStorageAvailable()) {
 
             File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), FOLDER_MAIN);
@@ -125,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             InputStream in = getResources().openRawResource(
-                    getResources().getIdentifier("raw/cyrillic",
+                    getResources().getIdentifier("raw/"+file,
                             "raw", getPackageName()));
             OutputStream out = new FileOutputStream(FILE_PATH);
 
@@ -164,6 +187,11 @@ public class MainActivity extends AppCompatActivity {
         String pack_selected = String.valueOf(pack.getSelectedItem());
         if (pack_selected.equals("Cyrillic fonts only")){
             CURRENT_FILE = FILE_PATH;
+            install(CURRENT_FILE);
+        }
+        else if (pack_selected.equals("RU interface/Ru fonts")){
+            CURRENT_FILE = RU_LATEST;
+            writeOnStorage("ru");
             install(CURRENT_FILE);
         }
         else {

@@ -1,29 +1,30 @@
 <resources>
     <string name="app_name">Cyrillic Pebble</string>
-    <string name="action_about">About</string>
-    <string name="install_lang">Choose main Pebble application to install:</string>
+    <string name="about_page">About</string>
+    <string name="install_message">Choose main Pebble application to install:</string>
     <string name="install_button">Go Cyrillic!</string>
     <string name="storage_unavailable">Can\u0027t write to external storage =( It is possible that read-only or USB file transfer mode is enabled</string>
-    <string name="granted">Can not write to external storage. Permission was not granted.</string>
+    <string name="write_permisson_not_granted">Can\u0027t write to external storage. Permission was not granted.</string>
     <string name="author">Author/Dev.: Dmytro Demchenko</string>
     <string name="content">Content: Lidia Ugryn</string>
-    <string name="lang_pack_creator">Lang .pbl: Semyon Maryasin</string>
+    <string name="pebble_forum"><a href="https://forums.getpebble.com/discussion/4738/pebble-in-russian-beta1/">Pebble Forum</a></string>
     <string name="design">Design: n/a</string>
-    <string name="about">Pebble Cyrillic: About</string>
+    <string name="page_about">Cyrillic Pebble: About</string>
     <string name="choose_install">Select installation type:</string>
     <string-array name="lang_array">
         <item>Cyrillic fonts only</item>
-        <item>RU lang/RU fonts. Stable</item>
-        <item>RU lang/Cyrillic fonts. Latest</item>
+        <item>RU interface/RU fonts</item>
+        <item>RU interface/RU fonts (Download latest)</item>
     </string-array>
-    <string name="version">Ver.: 1.1.0</string>
+    <string name="version">Ver.: 1.1.1</string>
     <string name="banner_home_id">ca-app-pub-5656178783951977/3842007644</string>
     <string name="banner_about_id">ca-app-pub-5656178783951977/5318740847</string>
     <string name="banner_beta">ca-app-pub-3940256099942544/6300978111</string>
     <string name="interstitial_beta">ca-app-pub-3940256099942544/1033173712</string>
     <string name="interstitial_onclick">ca-app-pub-5656178783951977/6795474045</string>
-    <string name="download_title">Cyrillic Pebble. Latest language pack</string>
+    <string name="download_title">RU latest language pack</string>
     <string name="download_description">Cyrillic Pebble. Latest language pack</string>
     <string name="no_internet">"No internet connection. Can\u0027t continue"</string>
-    <string name="downloading"></string>
+    <string name="downloading">Downloading latest version of language pack</string>
+    <string name="latest_version_warning">Note: Currently RU interface and fonts pack can be unstable. More info can be found at Pebble Forum. See details in Cyrillic Pebble: About page.</string>
 </resources>
