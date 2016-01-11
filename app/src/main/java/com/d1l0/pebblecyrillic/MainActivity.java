@@ -38,12 +38,13 @@ import com.google.android.gms.ads.InterstitialAd;
 public class MainActivity extends AppCompatActivity {
     InterstitialAd mInterstitialAd;
     String FOLDER_MAIN = "Android/data/com.d1l0.pebble.cyrillic/files";
-    String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+FOLDER_MAIN+"/cyrillic.pbl";
-    String RU_LATEST = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+FOLDER_MAIN+"/ru.pbl";
+    String ABSOLUTE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + FOLDER_MAIN;
+    String FILE_PATH = ABSOLUTE_PATH + "/cyrillic.pbl";
+    String RU_LATEST = ABSOLUTE_PATH + "/ru.pbl";
     String CURRENT_FILE = "";
     String LANG_SOURCE_URL = "https://github.com/whidrasl/pebble-russian-language-pack/blob/master/Russian-ru_RU.pbl?raw=true";
-    // Storage Permissions
 
+    // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAdClosed() {
                 requestNewInterstitial();
                 try {
-                    choose_install();
+                    chooseInstall();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         verifyStoragePermissions(this);
     }
 
-    public void Install(String path) throws IOException{
+    public void install(String path) throws IOException{
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         //Verify whether write to storage permissions was granted
@@ -150,27 +151,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View view) throws IOException {
-        //Calling interstitial google add and than launch Install method.
+        //Calling interstitial google add and than launch install method.
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
-            choose_install();
+            chooseInstall();
         }
     }
 
-    public void choose_install() throws IOException{
+    public void chooseInstall() throws IOException{
         Spinner pack = (Spinner) findViewById(R.id.pack);
         String pack_selected = String.valueOf(pack.getSelectedItem());
         if (pack_selected.equals("Cyrillic fonts only")){
             CURRENT_FILE = FILE_PATH;
-            Install(CURRENT_FILE);
+            install(CURRENT_FILE);
         }
         else {
-            install_latest();
+            installLatest();
         }
     }
 
-    public void install_latest(){
+    public void installLatest(){
         if (isNetworkAvailable(this)) {
             downloadLatest();
             int duration = Toast.LENGTH_LONG;
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     try {
-                        Install(RU_LATEST);
+                        install(RU_LATEST);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -270,8 +271,7 @@ public class MainActivity extends AppCompatActivity {
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         }
-        request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + "/"+FOLDER_MAIN, "ru.pbl");
+        request.setDestinationInExternalPublicDir(ABSOLUTE_PATH, "ru.pbl");
 
         // get download service and enqueue file
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
